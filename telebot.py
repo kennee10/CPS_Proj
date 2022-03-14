@@ -1,10 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# DATA
+data = {
+    "667047883-vuvip": {
+        "name": "Gabriella",
+        "languagePreference": "English",
+        "IC": "T0012345A",
+        "address": "Blk 884 yishun street 81",
+        "DOB": "1-1-2000",
+        "bloodType": "O+",
+        "emergencyContact": "81234567",
+        "relationshipOfEmergencyContact": "Mother"
+    }
+}
+
+import time
 import settings
 import telegram
 import logging
 import haversine
+import serial
 import enum
 import pprint
 
@@ -117,8 +133,23 @@ def main() -> None:
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT, SIGTERM or SIGABRT. 
     # This should be used most of the time, since start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+    # updater.idle()
+    print("im here")
+    # Set up the Serial connection to capture the Microbit communications
+    ser = serial.Serial()
+    ser.baudrate = 115200
+    ser.port = "COM9"
+    ser.open()
 
+    while True:
+        time.sleep(1)
+
+        if ser.in_waiting > 0:
+
+            microbitdata = str(ser.readline())
+            uniqueIdentifier = microbitdata[3:22].strip()
+            print(uniqueIdentifier)
+    # updater.idle()
 
 if __name__ == "__main__":
     main()
