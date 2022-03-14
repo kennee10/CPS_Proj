@@ -68,20 +68,13 @@ def start(update: Update, context: CallbackContext) -> None:
 
     return ConversationHandler.END
 
-#TODO: what the bot does after you share location
-def handle_location_from_private_chats(update: Update, context: CallbackContext) -> None:
-    if update.edited_message: # Live Location
+def location(update: Update, context: CallbackContext) -> None:
+    message = None
+    if update.edited_message:
         message = update.edited_message
-    elif update.message: # Non-live Location
-        message = update.message
     else:
-        logger.error("update.edited_message and update.message are both None")
-        return
-
-    # Calculate the distance between the user and SMUC
-    distance = get_distance_from_smuc(message.location)
-    message.reply_text(text=f"You're {distance:.3f}km away from SMUC 🚁")
-
+        message = update.message
+    context.bot.send_location(chat_id=69467610, latitude =  message.location.latitude, longitude =  message.location.longitude)
 
 def handle_stateless_callback_query(update: Update, context: CallbackContext):
     update.callback_query.answer()
@@ -109,7 +102,7 @@ def main() -> None:
     # Add handler for location messages, from private chats
     updater.dispatcher.add_handler(MessageHandler(
         filters=Filters.location & Filters.chat_type.private, 
-        callback=handle_location_from_private_chats))
+        callback=location))
 
     food_conversation_handler = ConversationHandler(
         entry_points=[
