@@ -8,7 +8,9 @@ ser.open()
 
 while True:
 
-    microbitdata = str(ser.readline())
-    uniqueIdentifier = microbitdata[3:22].strip()
-    # print(microbitdata)
-    print(uniqueIdentifier)
+    if ser.in_waiting > 0:
+
+        microbitdata = str(ser.readline())
+        uniqueIdentifier = microbitdata[3:22].strip()
+        # print(microbitdata)
+        print(uniqueIdentifier)
