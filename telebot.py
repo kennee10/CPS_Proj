@@ -48,7 +48,7 @@ def start(update: Update, context: CallbackContext) -> None:
         ]]
 
     # Send message with text and appended InlineKeyboard
-    update.message.reply_text("Choose", reply_markup=ReplyKeyboardMarkup(keyboard))
+    update.message.reply_text("Choose", reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard = True))
 
     return ConversationHandler.END
 
@@ -104,6 +104,10 @@ def main() -> None:
         },
         fallbacks=[CommandHandler(command="start", filters=Filters.chat_type.private, callback=start)],
     )
+
+
+    # Add handler for food conversations
+    updater.dispatcher.add_handler(food_conversation_handler)
 
     # Add handler for commands that don't get handled by anything so far
     updater.dispatcher.add_handler(MessageHandler(filters=Filters.command, callback=handle_unknown_command))
