@@ -142,7 +142,25 @@ def main() -> None:
             microbitdata = str(ser.readline())
             uniqueIdentifier = microbitdata[3:22].strip()
             print(uniqueIdentifier)
-    # updater.idle()
+            
+            # check if user exists
+            if uniqueIdentifier in data:
+                
+                usersData = data[uniqueIdentifier]
+                """
+                    usersData = {
+                        "name": "Gabriella",
+                        "languagePreference": "English",
+                        "IC": "T0012345A",
+                        "address": "Blk 884 yishun street 81",
+                        "DOB": "1-1-2000",
+                        "bloodType": "O+",
+                        "emergencyContact": "81234567",
+                        "relationshipOfEmergencyContact": "Mother"
+                    }
+                """
+                # send these data to laptop connected to microbit dongle via telegram (padme/jo know how to do?)
+    
 
 if __name__ == "__main__":
     main()
