@@ -15,6 +15,10 @@ data = {
     }
 }
 
+currentLatitude = 0
+currentLongitude = 0
+
+from ast import Call
 import time
 import settings
 import telegram
@@ -23,6 +27,9 @@ import haversine
 import serial
 import enum
 import pprint
+import telegram_send
+import time
+
 
 from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
@@ -68,13 +75,27 @@ def start(update: Update, context: CallbackContext) -> None:
 
     return ConversationHandler.END
 
+
 def location(update: Update, context: CallbackContext) -> None:
     message = None
     if update.edited_message:
         message = update.edited_message
     else:
         message = update.message
-    context.bot.send_location(chat_id=69467610, latitude =  message.location.latitude, longitude =  message.location.longitude)
+    global currentLatitude
+    currentLatitude = message.location.latitude
+    global currentLongitude
+    currentLongitude = message.location.longitude
+    #context.bot.send_location(chat_id=201975615, latitude =  message.location.latitude, longitude =  message.location.longitude)
+
+
+def sendInfo(usersData, bot):
+    data_string = ("Name: " + usersData.get('name') + "\nLanguage Preference: " + usersData.get('languagePreference') 
+    + "\nIC: " + usersData.get('IC') + "\nAddress: " + usersData.get('address') + "\nDate of Birth: " + usersData.get('DOB')
+    + "\nBlood Type: " + usersData.get('bloodType') + "\nEmergency Contact: " + usersData.get('emergencyContact')
+    + "\nRelationship of Emergency Contact: " + usersData.get('relationshipOfEmergencyContact'))
+    telegram_send.send(messages=[data_string])
+    bot.send_location(chat_id=201975615, latitude =  currentLatitude, longitude =  currentLongitude)
 
 def handle_stateless_callback_query(update: Update, context: CallbackContext):
     update.callback_query.answer()
@@ -93,6 +114,7 @@ def main() -> None:
     # Create an updater object, and pass it the bot's token. 
     # The updater continuously fetches new updates from Telegram and passes them to the updater.dispatcher object.
     updater = telegram.ext.Updater(settings.my_token)
+    bot = telegram.Bot(settings.my_token)
 
     # Add handler for text messages (excluding commands), from private chats
     updater.dispatcher.add_handler(MessageHandler(
@@ -128,6 +150,10 @@ def main() -> None:
     # This should be used most of the time, since start_polling() is non-blocking and will stop the bot gracefully.
     # updater.idle()
     print("im here")
+
+    #sendInfo(data["667047883-vuvip"], bot)
+    #comment out the whole block below and use the above line of code to test without microbit
+
     # Set up the Serial connection to capture the Microbit communications
     ser = serial.Serial()
     ser.baudrate = 115200
@@ -135,7 +161,7 @@ def main() -> None:
     ser.open()
 
     while True:
-        time.sleep(1)
+        time.sleep(10)
 
         if ser.in_waiting > 0:
 
@@ -147,20 +173,8 @@ def main() -> None:
             if uniqueIdentifier in data:
                 
                 usersData = data[uniqueIdentifier]
-                """
-                    usersData = {
-                        "name": "Gabriella",
-                        "languagePreference": "English",
-                        "IC": "T0012345A",
-                        "address": "Blk 884 yishun street 81",
-                        "DOB": "1-1-2000",
-                        "bloodType": "O+",
-                        "emergencyContact": "81234567",
-                        "relationshipOfEmergencyContact": "Mother"
-                    }
-                """
-                # send these data to laptop connected to microbit dongle via telegram (padme/jo know how to do?)
-    
+                sendInfo(usersData)
+                
 
 if __name__ == "__main__":
     main()
