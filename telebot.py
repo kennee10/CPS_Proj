@@ -27,7 +27,6 @@ import haversine
 import serial
 import enum
 import pprint
-import telegram_send
 import time
 
 
@@ -94,7 +93,7 @@ def sendInfo(usersData, bot):
     + "\nIC: " + usersData.get('IC') + "\nAddress: " + usersData.get('address') + "\nDate of Birth: " + usersData.get('DOB')
     + "\nBlood Type: " + usersData.get('bloodType') + "\nEmergency Contact: " + usersData.get('emergencyContact')
     + "\nRelationship of Emergency Contact: " + usersData.get('relationshipOfEmergencyContact'))
-    telegram_send.send(messages=[data_string])
+    bot.send_message(chat_id=201975615, text = data_string)
     bot.send_location(chat_id=201975615, latitude =  currentLatitude, longitude =  currentLongitude)
 
 def handle_stateless_callback_query(update: Update, context: CallbackContext):
@@ -151,9 +150,9 @@ def main() -> None:
     # updater.idle()
     print("im here")
 
-    #sendInfo(data["667047883-vuvip"], bot)
+    sendInfo(data["667047883-vuvip"], bot)
     #comment out the whole block below and use the above line of code to test without microbit
-
+'''
     # Set up the Serial connection to capture the Microbit communications
     ser = serial.Serial()
     ser.baudrate = 115200
@@ -174,7 +173,7 @@ def main() -> None:
                 
                 usersData = data[uniqueIdentifier]
                 sendInfo(usersData)
-                
+                '''
 
 if __name__ == "__main__":
     main()
