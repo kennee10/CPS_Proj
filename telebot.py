@@ -7,11 +7,21 @@ data = {
         "name": "Gabriella",
         "languagePreference": "English",
         "IC": "T0012345A",
-        "address": "Blk 884 yishun street 81",
+        "address": "Blk 884 Yishun Street 81",
         "DOB": "1-1-2000",
         "bloodType": "O+",
         "emergencyContact": "81234567",
         "relationshipOfEmergencyContact": "Mother"
+    }, 
+    "1189583850-pigav": {
+        "name": "Jonathon",
+        "languagePreference": "English",
+        "IC": "T0067891Z",
+        "address": "20 Bukit Timah Road",
+        "DOB": "31-12-2000",
+        "bloodType": "AB+",
+        "emergencyContact": "87654321",
+        "relationshipOfEmergencyContact": "Sister"
     }
 }
 
@@ -93,8 +103,8 @@ def sendInfo(usersData, bot):
     + "\nIC: " + usersData.get('IC') + "\nAddress: " + usersData.get('address') + "\nDate of Birth: " + usersData.get('DOB')
     + "\nBlood Type: " + usersData.get('bloodType') + "\nEmergency Contact: " + usersData.get('emergencyContact')
     + "\nRelationship of Emergency Contact: " + usersData.get('relationshipOfEmergencyContact'))
-    bot.send_message(chat_id=201975615, text = data_string)
-    bot.send_location(chat_id=201975615, latitude =  currentLatitude, longitude =  currentLongitude)
+    bot.send_message(chat_id=596184207, text = data_string)
+    bot.send_location(chat_id=596184207, latitude =  currentLatitude, longitude =  currentLongitude)
 
 def handle_stateless_callback_query(update: Update, context: CallbackContext):
     update.callback_query.answer()
@@ -150,18 +160,19 @@ def main() -> None:
     # updater.idle()
     print("im here")
 
-    sendInfo(data["667047883-vuvip"], bot)
+    #sendInfo(data["667047883-vuvip"], bot)
     #comment out the whole block below and use the above line of code to test without microbit
-'''
+
     # Set up the Serial connection to capture the Microbit communications
     ser = serial.Serial()
     ser.baudrate = 115200
-    ser.port = "COM9"
+    ser.port = "COM8"
     ser.open()
 
     while True:
         time.sleep(10)
 
+        print("reading")
         if ser.in_waiting > 0:
 
             microbitdata = str(ser.readline())
@@ -172,8 +183,7 @@ def main() -> None:
             if uniqueIdentifier in data:
                 
                 usersData = data[uniqueIdentifier]
-                sendInfo(usersData)
-                '''
+                sendInfo(usersData, bot)
 
 if __name__ == "__main__":
     main()
