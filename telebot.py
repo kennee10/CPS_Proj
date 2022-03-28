@@ -170,7 +170,7 @@ def main() -> None:
     ser.open()
 
     while True:
-        time.sleep(10)
+        time.sleep(5)
 
         print("reading")
         if ser.in_waiting > 0:
