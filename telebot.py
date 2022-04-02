@@ -72,17 +72,7 @@ STATE_CHOOSE_MENU = "STATE_CHOOSE_MENU"
 SHARE_LOCATION     = "location"
 
 def start(update: Update, context: CallbackContext) -> None:
-
-    # Build InlineKeyboard where each button has a displayed text and a string as callback_data
-    # The keyboard is a list of button rows, where each row is in turn a list (hence `[[...]]`).
-    keyboard = [[
-        KeyboardButton("Share Location", request_location = True),
-        ]]
-
-    # Send message with text and appended InlineKeyboard
-    update.message.reply_text("Choose", reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard = True))
-
-    return ConversationHandler.END
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Please turn on your live location.")
 
 
 def location(update: Update, context: CallbackContext) -> None:
@@ -105,6 +95,8 @@ def sendInfo(usersData, bot):
     + "\nRelationship of Emergency Contact: " + usersData.get('relationshipOfEmergencyContact'))
     bot.send_message(chat_id=596184207, text = data_string)
     bot.send_location(chat_id=596184207, latitude =  currentLatitude, longitude =  currentLongitude)
+    bot.send_message(chat_id=468253419, text = data_string)
+    bot.send_location(chat_id=468253419, latitude =  currentLatitude, longitude =  currentLongitude)
 
 def handle_stateless_callback_query(update: Update, context: CallbackContext):
     update.callback_query.answer()
@@ -159,10 +151,11 @@ def main() -> None:
     # This should be used most of the time, since start_polling() is non-blocking and will stop the bot gracefully.
     # updater.idle()
     print("im here")
-
-    #sendInfo(data["667047883-vuvip"], bot)
+    time.sleep(20)
+    sendInfo(data["667047883-vuvip"], bot)
     #comment out the whole block below and use the above line of code to test without microbit
 
+'''
     # Set up the Serial connection to capture the Microbit communications
     ser = serial.Serial()
     ser.baudrate = 115200
@@ -184,6 +177,7 @@ def main() -> None:
                 
                 usersData = data[uniqueIdentifier]
                 sendInfo(usersData, bot)
+'''
 
 if __name__ == "__main__":
     main()
