@@ -1,0 +1,76 @@
+basic.show_icon(IconNames.HAPPY)
+music.set_volume(100)
+seconds = 0
+touchCounter = 0
+radio.set_group(173)
+radio.set_transmit_power(7)
+radio.set_transmit_serial_number(True)
+ 
+def on_forever():
+    global seconds, touchCounter
+    if pins.digital_read_pin(DigitalPin.P1) == 0:
+        seconds = 0
+    else:
+        if pins.digital_read_pin(DigitalPin.P1) == 1:
+            basic.show_leds("""
+                # # # # #
+                                # # # # #
+                                # # # # #
+                                # # # # #
+                                # # # # #
+            """)
+            pins.digital_write_pin(DigitalPin.P1, 0)
+            touchCounter = 0
+            while seconds <= 10:
+                basic.pause(1000)
+                seconds += 1
+                if seconds == 2:
+                    basic.show_leds("""
+                        . . . . .
+                                                # # # # #
+                                                # # # # #
+                                                # # # # #
+                                                # # # # #
+                    """)
+                elif seconds == 4:
+                    basic.show_leds("""
+                        . . . . .
+                                                . . . . .
+                                                # # # # #
+                                                # # # # #
+                                                # # # # #
+                    """)
+                elif seconds == 6:
+                    basic.show_leds("""
+                        . . . . .
+                                                . . . . .
+                                                . . . . .
+                                                # # # # #
+                                                # # # # #
+                    """)
+                elif seconds == 8:
+                    basic.show_leds("""
+                        . . . . .
+                                                . . . . .
+                                                . . . . .
+                                                . . . . .
+                                                # # # # #
+                    """)
+                elif seconds == 10:
+                    basic.clear_screen()
+                else:
+                    pass
+                if pins.digital_read_pin(DigitalPin.P1) == 1:
+                    touchCounter += 1
+                    pins.digital_write_pin(DigitalPin.P1, 0)
+                    if touchCounter == 1:
+                        pins.digital_write_pin(DigitalPin.P1, 0)
+                        basic.show_icon(IconNames.YES)
+                        music.play_melody("A B C5 - - - - - ", 120)
+                        radio.send_string("" + str(control.device_serial_number()) + "-" + control.device_name())
+                        basic.clear_screen()
+                        seconds = 0
+                        break
+            seconds = 0
+            basic.show_icon(IconNames.HAPPY)
+basic.forever(on_forever)

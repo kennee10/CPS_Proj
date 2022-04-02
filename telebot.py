@@ -150,7 +150,6 @@ def main() -> None:
     # Run the bot until you press Ctrl-C or the process receives SIGINT, SIGTERM or SIGABRT. 
     # This should be used most of the time, since start_polling() is non-blocking and will stop the bot gracefully.
     # updater.idle()
-    print("im here")
     time.sleep(20)
     sendInfo(data["667047883-vuvip"], bot)
     #comment out the whole block below and use the above line of code to test without microbit
@@ -165,12 +164,10 @@ def main() -> None:
     while True:
         time.sleep(5)
 
-        print("reading")
         if ser.in_waiting > 0:
 
             microbitdata = str(ser.readline())
             uniqueIdentifier = microbitdata[3:22].strip()
-            print(uniqueIdentifier)
             
             # check if user exists
             if uniqueIdentifier in data:
