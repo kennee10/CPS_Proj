@@ -55,26 +55,11 @@ from telegram.ext import (
 logging.basicConfig(format="%(asctime)s %(levelname)s %(filename)s:%(funcName)s():%(lineno)i: %(message)s", datefmt="%Y-%m-%d %H:%M:%S",  level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Where SMUC is
-SMUC_LOCATION = telegram.Location(latitude=1.295220, longitude=103.849632)
-SMUC_VENUE = telegram.Venue(location=SMUC_LOCATION, title="SMU Connexion", address="")
-
-
-def get_distance_from_smuc(location):
-    return haversine.haversine((SMUC_LOCATION.latitude, SMUC_LOCATION.longitude), (location.latitude, location.longitude))
-
-
-####################   Foodie feature. Works in private chats
-
-
-STATE_CHOOSE_MENU = "STATE_CHOOSE_MENU"
-
-SHARE_LOCATION     = "location"
-
+#on /start, bot will ask client to turn on live location
 def start(update: Update, context: CallbackContext) -> None:
     context.bot.send_message(chat_id=update.effective_chat.id, text="Please turn on your live location.")
 
-
+#handle location messages
 def location(update: Update, context: CallbackContext) -> None:
     message = None
     if update.edited_message:
@@ -85,22 +70,21 @@ def location(update: Update, context: CallbackContext) -> None:
     currentLatitude = message.location.latitude
     global currentLongitude
     currentLongitude = message.location.longitude
-    #context.bot.send_location(chat_id=201975615, latitude =  message.location.latitude, longitude =  message.location.longitude)
 
-
+#send user's data
 def sendInfo(usersData, bot):
     data_string = ("Name: " + usersData.get('name') + "\nLanguage Preference: " + usersData.get('languagePreference') 
     + "\nIC: " + usersData.get('IC') + "\nAddress: " + usersData.get('address') + "\nDate of Birth: " + usersData.get('DOB')
     + "\nBlood Type: " + usersData.get('bloodType') + "\nEmergency Contact: " + usersData.get('emergencyContact')
     + "\nRelationship of Emergency Contact: " + usersData.get('relationshipOfEmergencyContact'))
-    bot.send_message(chat_id=596184207, text = data_string)
-    bot.send_location(chat_id=596184207, latitude =  currentLatitude, longitude =  currentLongitude)
-    bot.send_message(chat_id=468253419, text = data_string)
-    bot.send_location(chat_id=468253419, latitude =  currentLatitude, longitude =  currentLongitude)
+    bot.send_message(chat_id=settings.chat_id1, text = data_string)
+    bot.send_location(chat_id=settings.chat_id1, latitude =  currentLatitude, longitude =  currentLongitude)
+    bot.send_message(chat_id=settings.chat_id2, text = data_string)
+    bot.send_location(chat_id=settings.chat_id2, latitude =  currentLatitude, longitude =  currentLongitude)
+
 
 def handle_stateless_callback_query(update: Update, context: CallbackContext):
-    update.callback_query.answer()
-    update.callback_query.message.reply_animation(animation="https://media.tenor.com/images/c6956678c2456adbcbaac55b57806240/tenor.gif", caption=f"idk what's happening, try doing /start to start?")
+    update.message.reply_text(text=f"Hey, try sending /start")
 
 
 def handle_unknown_command(update: Update, context: CallbackContext):
@@ -108,7 +92,7 @@ def handle_unknown_command(update: Update, context: CallbackContext):
 
 
 def handle_text_message_from_private_chats(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(text=f"hey, try /start")
+    update.message.reply_text(text=f"Hey, try sending /start")
 
 
 def main() -> None:
@@ -127,20 +111,6 @@ def main() -> None:
         filters=Filters.location & Filters.chat_type.private, 
         callback=location))
 
-    food_conversation_handler = ConversationHandler(
-        entry_points=[
-            CommandHandler(command="start", filters=Filters.chat_type.private, callback=start),
-            CallbackQueryHandler(callback=handle_stateless_callback_query)
-            ],
-        states={
-        },
-        fallbacks=[CommandHandler(command="start", filters=Filters.chat_type.private, callback=start)],
-    )
-
-
-    # Add handler for food conversations
-    updater.dispatcher.add_handler(food_conversation_handler)
-
     # Add handler for commands that don't get handled by anything so far
     updater.dispatcher.add_handler(MessageHandler(filters=Filters.command, callback=handle_unknown_command))
 
@@ -150,11 +120,10 @@ def main() -> None:
     # Run the bot until you press Ctrl-C or the process receives SIGINT, SIGTERM or SIGABRT. 
     # This should be used most of the time, since start_polling() is non-blocking and will stop the bot gracefully.
     # updater.idle()
-    time.sleep(20)
-    sendInfo(data["667047883-vuvip"], bot)
+    #time.sleep(20)
+    #sendInfo(data["667047883-vuvip"], bot)
     #comment out the whole block below and use the above line of code to test without microbit
 
-'''
     # Set up the Serial connection to capture the Microbit communications
     ser = serial.Serial()
     ser.baudrate = 115200
@@ -174,7 +143,6 @@ def main() -> None:
                 
                 usersData = data[uniqueIdentifier]
                 sendInfo(usersData, bot)
-'''
 
 if __name__ == "__main__":
     main()
